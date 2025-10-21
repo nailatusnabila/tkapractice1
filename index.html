@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English TKA Interactive Quiz 1</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* --- CSS Variables --- */
+        :root {
+            --bg-color: #f0f2f5;
+            --main-yellow: #f7c858;
+            --dark-blue: #29477a;
+            --soft-blue: #eaf4ff;
+            --light-gray: #e0e0e0;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --highlight-red: #e74c3c;
+            --highlight-green: #2ecc71;
+            --highlight-yellow: #f1c40f;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Basic Reset & Body Styling --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        h1, h2, h3, h4, .title-bar, .btn, #timer {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* --- Main Wrapper & Card Structure --- */
+        .wrapper {
+            width: 100%;
+            max-width: 95%;
+            margin-bottom: 5rem;
+        }
+
+        .card {
+            background-color: var(--main-yellow);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- Tombol Exit (Floating) --- */
+        .exit-btn {
+            position: fixed; /* Diubah jadi fixed */
+            top: 25px;
+            right: 25px;
+            width: 45px;
+            height: 45px;
+            background-color: var(--highlight-red);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 1000; /* Pastikan di atas segalanya */
+        }
+        .exit-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .title-bar {
+            background-color: var(--dark-blue);
+            color: var(--text-light);
+            font-weight: 700;
+            font-size: 1.5rem;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .content-box {
+            background-color: var(--text-light);
+            border: 1px solid var(--light-gray);
+            border-radius: 15px;
+            padding: 25px;
+            line-height: 1.7;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* --- Start Screen --- */
+        #start-screen {
+            text-align: center;
+        }
+        #start-screen h1 {
+            color: var(--dark-blue);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        #start-screen p {
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* --- Quiz Header (Inside Content Box) --- */
+        .quiz-header, .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .quiz-header h2, .review-header h2 {
+            color: var(--dark-blue);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        /* --- Timer & Progress Bar --- */
+        #timer-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #timer {
+            background-color: var(--soft-blue);
+            color: var(--dark-blue);
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            margin-top: 15px;
+            order: 3;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 100%;
+            background-color: var(--highlight-green);
+            border-radius: 10px;
+            transition: width 1s linear, background-color 0.5s ease;
+        }
+
+        /* --- Main Content Area (Text & Questions) --- */
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            border-top: 2px solid var(--light-gray);
+            padding-top: 25px;
+        }
+
+        #passage-container, #review-passage-container {
+            flex: 1;
+            background-color: var(--soft-blue);
+            padding: 20px;
+            border-radius: 15px;
+            overflow-y: auto;
+            max-height: 60vh;
+            line-height: 1.7;
+        }
+        #passage-container img, #review-passage-container img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        #question-container, #review-details-container {
+            flex: 1;
+        }
+        
+        #question-text {
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        /* --- Options Styling --- */
+        .option {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--light-gray);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option:hover {
+            border-color: var(--dark-blue);
+            background-color: var(--soft-blue);
+        }
+        .option input {
+            margin-right: 15px;
+        }
+        .option input[type="checkbox"] {
+            width: 1.3em;
+            height: 1.3em;
+            cursor: pointer;
+        }
+        .option input[type="radio"] {
+            width: 1.1em;
+            height: 1.1em;
+            cursor: pointer;
+        }
+
+        /* --- Matching Table Styling --- */
+        .matching-table-container {
+             overflow-x: auto;
+        }
+        .matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .matching-table th, .matching-table td {
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+        }
+        .matching-table th {
+            background-color: var(--dark-blue);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        .matching-table td:not(:first-child) {
+            text-align: center;
+        }
+        .matching-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .matching-table input[type="radio"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: #fff;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.5em;
+            height: 1.5em;
+            border: 0.15em solid var(--dark-blue);
+            border-radius: 50%;
+            transform: translateY(-0.075em);
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+        }
+        .matching-table input[type="radio"]::before {
+            content: "";
+            width: 0.85em;
+            height: 0.85em;
+            border-radius: 50%;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--dark-blue);
+        }
+        .matching-table input[type="radio"]:checked::before {
+            transform: scale(1);
+        }
+
+
+        /* --- Navigation & Tombol --- */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--light-gray);
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            background-color: var(--dark-blue);
+            color: var(--text-light);
+        }
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .btn:disabled {
+            background-color: var(--light-gray);
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #start-btn, #review-quiz-btn {
+            background-color: var(--highlight-green);
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        /* --- Results Screen --- */
+        #results-screen {
+            text-align: center;
+        }
+        #score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 10px;
+        }
+        #score-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        /* --- Review Section Styling --- */
+        .review-item {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid var(--light-gray);
+        }
+        .review-item.correct {
+            border-left: 7px solid var(--highlight-green);
+        }
+        .review-item.incorrect {
+            border-left: 7px solid var(--highlight-red);
+        }
+        .review-item h4 {
+            font-weight: 600;
+            color: var(--dark-blue);
+            margin-bottom: 15px;
+        }
+        .review-answer {
+            margin-bottom: 10px;
+        }
+        .review-answer span {
+            font-weight: 600;
+        }
+        .review-answer ul {
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+        .review-answer ul li {
+            margin-bottom: 5px;
+        }
+        
+        .review-explanation {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--light-gray);
+            background-color: var(--soft-blue);
+            padding: 15px;
+            border-radius: 10px;
+            line-height: 1.7;
+        }
+
+        /* --- Footer --- */
+        footer {
+            margin-top: 20px;
+            color: #555;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* --- Responsive Design --- */
+        @media (min-width: 1024px) {
+            .wrapper {
+                max-width: 65%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            .wrapper {
+                max-width: 100%;
+            }
+            .card {
+                padding: 15px;
+            }
+            .exit-btn {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+            }
+            .content-box {
+                padding: 15px;
+            }
+            .title-bar {
+                font-size: 1.2rem;
+            }
+            .content-wrapper {
+                flex-direction: column;
+            }
+            #passage-container, #review-passage-container {
+                max-height: 40vh;
+            }
+            .quiz-header, .review-header {
+                gap: 10px;
+            }
+            .quiz-header h2, .review-header h2 {
+                order: 1;
+            }
+            #timer-container {
+                order: 2;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            #question-text {
+                font-size: 1rem;
+            }
+            #score {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="#" class="exit-btn">
+        <i class="fa-solid fa-xmark"></i>
+    </a>
+
+    <div class="wrapper">
+        <div class="card">
+            <div class="title-bar">TKA Practice Test - Set 1 🚀</div>
+            <div class="content-box">
+                <div id="start-screen">
+                    <h1>Welcome to the TKA Practice Test!</h1>
+                    <p>There are 20 questions that you must answer. Allocated time is <b>40 minutes</b>. Read the text carefully before clicking on the correct answers. Good luck! 🔥</p>
+                    <button id="start-btn" class="btn">Start The Quiz</button>
+                </div>
+
+                <div id="quiz-area" class="hidden">
+                    <div class="quiz-header">
+                        <h2 id="question-number">1/20</h2>
+                        <div id="timer-container">
+                            <i class="fa-solid fa-clock"></i>
+                            <span id="timer">40:00</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="content-wrapper">
+                        <div id="passage-container"></div>
+                        <div id="question-container">
+                            <p id="question-text"></p>
+                            <div id="options-container"></div>
+                        </div>
+                    </div>
+                    <div class="navigation">
+                        <button id="prev-btn" class="btn">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            Previous
+                        </button>
+                        <button id="next-btn" class="btn">
+                            Next
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="results-screen" class="hidden">
+                    <h2 id="score"></h2>
+                    <p id="score-text"></p>
+                    <button id="review-quiz-btn" class="btn">Check Your Answers</button>
+                </div>
+
+                <div id="review-area" class="hidden">
+                    <div class="review-header">
+                        <h2 id="review-number">Explanation 1/20</h2>
+                    </div>
+                    <div class="content-wrapper">
+                        <div id="review-passage-container"></div>
+                        <div id="review-details-container"></div>
+                    </div>
+                    <div class="navigation">
+                        <button id="review-prev-btn" class="btn">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            Previous
+                        </button>
+                        <button id="back-to-score-btn" class="btn">Back to Score</button>
+                        <button id="review-next-btn" class="btn">
+                            Next
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <footer>© SMAIT Ittihadul Muwahidin 2025.</footer>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const passage1to5 = `King Hung Vuong VI had a beautiful daughter. He did not want her to marry just any prince. So, he made an announcement that he was looking for the right husband for her. Many princes came from faraway lands, but none of them was a good match for the princess.<br><br>Son Tinh was the Spirit of the Mountain, and Thuy Tinh was the Spirit of the Waters. One day, they both appeared as young noblemen and asked to marry the princess. They were equally talented, powerful, and respected. The King found it hard to choose, so he decided to give them a test. He said that the one who brought the proper wedding gifts first the next morning would marry his daughter.<br><br>The next day, Son Tinh arrived early with his gifts. The King kept his promise and gave the princess to him. Thuy Tinh was angry about losing. He challenged Son Tinh to fight for the princess. But Son Tinh refused, believing he had already won fairly. Furious, Thuy Tinh used his power to call the rivers and streams to rise. Soon, the land was covered with floods that destroyed crops and homes.<br><br>Son Tinh stayed calm in his mountain palace. Whenever the water rose, he made his mountains higher. After many days of fighting, Thuy Tinh grew tired and ordered the waters to retreat. Still, he never accepted his defeat. Every year, he tried again to attack, and this is how monsoons came to Vietnam.`;
+    
+    const passage6to10 = `<img src="https://i.imgur.com/vBPck4m.png" alt="How to Study in the Library">`;
+
+    const passage11to14 = `<h4>Exploring Bali's Natural Wonders</h4>Bali, a beautiful island in Indonesia, is known for its stunning landscapes and rich culture. While many come for the beaches and temples, the island also offers natural attractions that amaze nature lovers from around the world. From national parks and waterfalls to terraced rice fields, Bali is full of natural beauty.<br><br>In the west lies West Bali National Park, a peaceful area filled with green forests, calm mangrove swamps, and colorful coral reefs along the sea. The air is fresh, and the scenery feels untouched. One of the park’s most special sights is the Bali Starling—a rare white bird with bright blue around its eyes. Its soft song adds magic to the quiet forest. Visitors can walk along clear paths and enjoy the rich variety of plants and animals in this protected area.<br><br>Heading north, travelers find the scenic Munduk Waterfall, surrounded by green hills and forests. Water flows gently over rocky cliffs into a cool clear pool. Mist rises into the air, mixing with the calming sound of falling water. The walk to the waterfall passes through narrow paths lined with coffee and clove trees. Their fresh scent fills the air, offering a pleasant and peaceful experience. Munduk is the perfect place to relax and enjoy Bali’s natural charm.<br><br>Near the cultural center Ubud, the famous Tegalalang rice terraces stretch across the hills in green steps. These terraces are shaped by generations of farmers who work the land by hand. In the morning, mist rises above the fields, and sunlight reflects off the water in the paddies. Farmers in wide-brimmed hats plant rice carefully, their feet sinking into the soft earth. Water flows gently through small canals, keeping the fields healthy and green. The quiet surroundings and slow rhythm of farm life create a peaceful and inspiring scene.<br><br>These natural wonders highlight Bali's dedication in preserving its environmental and cultural treasures. By exploring these sites, tourists not only experience the island's scenic beauty but also support ongoing conservation efforts, helping to ensure that Bali's wonders last for future generations.`;
+
+    const passage15to16 = `<h4>My Experience as an Intern at a Sports Club</h4>Last summer, I had the opportunity to work as an intern at a local sports club. It was my first time working in a professional sports environment, and I was both nervous and excited. The internship went through a few phases, starting from orientation until finally jumping in to help during practices and games.<br><br>On my first day, I met the head coach, who welcomed me and explained my tasks. I had to set up cones for drills, bring water for the players, and check the training schedules. The first few days were challenging because I was not used to the morning routine. Every morning I had to wake up early, arrive on time, and follow instructions carefully. I worried about making mistakes, but the coaches were kind and guided me.<br><br>In the second month of my internship, I was trained to handle emergency situations. I got the chance to put that knowledge into practice when something unexpected happened. During football practice, a player fell and hurt his ankle. Everyone stopped, and I quickly ran to get the first aid kit. I helped the coach assess the injury and ensured the player stayed calm while we got him seated safely. Luckily, it wasn’t serious, but the experience reinforced an important lesson: staying alert and prepared during emergencies can make a big difference.<br><br>At the end of my internship, the coaches held an evaluation and reflection session where they shared the results of their feedback. They highlighted my strengths in teamwork, responsibility, and communication, and even gave me a club T-shirt as a gift. I felt proud because I had improved in these areas. It was a great experience, and I hope to work in a sports club again in the future.`;
+    
+    const passage17to20 = `<h4>Social Media Harms Teen Mental Health</h4>In today’s world, social media is a big part of many teenagers’ daily lives. While it has some benefits, such as staying connected with friends, meeting new people, and learning about interesting topics, it also brings serious problems. I strongly believe that social media harms teen mental health, and we must pay more attention to this issue before it becomes even worse.<br><br>First, social media often makes teenagers compare themselves to others in an unhealthy way. When teens see pictures of people who seem perfect, they feel that they are not good enough. These feelings can lower self-esteem and lead to sadness, anxiety, or even depression. The problem is that many of these online posts are edited, filtered, or fake, but teens still feel pressure to look or live the same way. They may think that their own life is boring or not successful, which is simply not true.<br><br>Second, too much time on social media affects sleep and study habits. Many teenagers use their phones late at night, checking messages or watching videos, which reduces sleep time and quality. Without enough sleep, teens cannot focus well in class, and their grades may suffer. This can increase stress and worry about the future, making them feel overwhelmed.<br><br>Finally, online bullying, or cyberbullying, is another serious danger. Unlike face-to-face bullying, it can happen at any time and be shared with many people. Victims of cyberbullying often feel alone, scared, and helpless, and in some cases, it leads to serious mental health problems.<br><br>In conclusion, although social media has some good uses, its harm to teen mental health is much greater. Teenagers need support from parents, teachers, and society to use it wisely. Schools should teach students how to use social media in healthy ways, and parents should guide their children to take breaks and spend time offline. By doing this, we can help protect young people’s mental health in this digital age.`;
+
+    const questions = [
+        {
+            passage: passage1to5,
+            question: "Which of the following outlines shows the correct main points of the story?",
+            type: "single",
+            options: [
+                "King Hung Vuong VI wanted the best husband for his daughter. Many princes came but none was suitable. Son Tinh and Thuy Tinh both wanted to marry her. The King gave them a test. Thuy Tinh arrived first with the wedding gifts. The princess was given to Thuy Tinh.",
+                "King Hung Vuong VI had a beautiful daughter. He announced he was looking for the right husband. Son Tinh and Thuy Tinh appeared and asked to marry her. The King gave them a test with wedding gifts. Son Tinh arrived first and married the princess. Thuy Tinh attacked with floods but was defeated.",
+                "King Hung Vuong VI asked his daughter to choose her husband. The princess liked both Son Tinh and Thuy Tinh. The King delayed his decision for many days. Finally, he asked them to fight each other. Thuy Tinh lost the battle and left the land. The country never suffered from floods again.",
+                "King Hung Vuong VI searched for a husband for his daughter. Son Tinh and Thuy Tinh wanted to marry her. The King gave them a challenge. Thuy Tinh lost the test and became angry. He called the waters to rise and destroy the land. Son Tinh drowned in the floods.",
+                "The King wanted a nobleman for his daughter. He invited many princes to the palace. Son Tinh and Thuy Tinh competed for the princess. Son Tinh refused the challenge of gifts. The King chose Thuy Tinh as the winner. Thuy Tinh ruled peacefully without floods."
+            ],
+            answer: "King Hung Vuong VI had a beautiful daughter. He announced he was looking for the right husband. Son Tinh and Thuy Tinh appeared and asked to marry her. The King gave them a test with wedding gifts. Son Tinh arrived first and married the princess. Thuy Tinh attacked with floods but was defeated.",
+            explanation: "Jawaban yang bener itu B, wkwkwk. Poin-poin di opsi B itu paling akurat dan runut sesuai cerita. Opsi lain punya info yang salah, misalnya di opsi A dibilang Thuy Tinh yang menang, padahal di teks jelas banget 'Son Tinh arrived early with his gifts' dan 'gave the princess to him'."
+        },
+        {
+            passage: passage1to5,
+            question: "Why did Thuy Tinh attack Son Tinh after the wedding?",
+            type: "single",
+            options: [
+                "He was jealous of Son Tinh’s victory",
+                "He believed the King had lied to him.",
+                "He thought the princess loved him more.",
+                "He wanted to show off his power to the king.",
+                "He had promised to fight until death."
+            ],
+            answer: "He was jealous of Son Tinh’s victory",
+            explanation: "Di teks disebutin 'Thuy Tinh was angry about losing'. Terus dia 'challenged Son Tinh to fight' dan 'Furious, Thuy Tinh used his power to call the rivers...'. Ini nunjukkin kalo dia nyerang karena cemburu dan marah udah kalah."
+        },
+        {
+            passage: passage1to5,
+            question: "Decide if each trait shows a similarity or a difference between Son Tinh and Thuy Tinh.",
+            type: "matching_table",
+            columns: ["Traits", "Similarity", "Difference"],
+            items: {
+                "A. Both are not humans.": ["Similarity", "Difference"],
+                "B. They can control the elements.": ["Similarity", "Difference"],
+                "C. They love the king's daughter.": ["Similarity", "Difference"]
+            },
+            answer: {
+                "A. Both are not humans.": "Similarity",
+                "B. They can control the elements.": "Similarity",
+                "C. They love the king's daughter.": "Similarity"
+            },
+            explanation: "Semua poin di atas adalah 'Similarity' (kesamaan). A: Mereka berdua adalah 'Spirit' (roh), bukan manusia. B: Son Tinh bisa 'made his mountains higher' dan Thuy Tinh bisa 'call the rivers and streams to rise', jadi sama-sama bisa mengontrol elemen. C: Mereka berdua 'asked to marry the princess', yang artinya sama-sama cinta sama putri raja. Mantap! 👍"
+        },
+        {
+            passage: passage1to5,
+            question: "What does the phrase “kept his promise” in the text mean?",
+            type: "single",
+            options: [
+                "Forgot about his decision.",
+                "Changed his mind about the wedding.",
+                "Did what he had promised to do.",
+                "Delayed the marriage for many days.",
+                "The King asked the princes to bring more gifts."
+            ],
+            answer: "Did what he had promised to do.",
+            explanation: "Raja janji kalo 'the one who brought the proper wedding gifts first... would marry his daughter'. Pas Son Tinh dateng duluan, 'The King kept his promise and gave the princess to him'. Artinya raja melakukan apa yang udah dia janjikan."
+        },
+        {
+            passage: passage1to5,
+            question: "What is the main lesson of the story? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "Accept defeat gracefully to prevent harm to others.",
+                "Be fair and follow the agreed rules in competitions.",
+                "Choose peaceful solutions rather than angry reactions.",
+                "Prepare honestly and present your gifts properly.",
+                "Respect leaders’ decisions and community agreements."
+            ],
+            answer: ["Accept defeat gracefully to prevent harm to others.", "Be fair and follow the agreed rules in competitions."],
+            explanation: "Ada dua pelajaran utama nih. Pertama, 'Accept defeat gracefully...' karena kelakuan Thuy Tinh yang gak mau nerima kekalahan malah bikin bencana banjir. Kedua, 'Be fair and follow the agreed rules...' karena Son Tinh menang secara adil sesuai aturan yang dibuat raja. Good job kalo bener semua! 🥳"
+        },
+        {
+            passage: passage6to10,
+            question: "Categorize the following activities as either preparation or breaks during study.",
+            type: "matching_table",
+            columns: ["Activities", "Preparation", "Breaks"],
+            items: {
+                "A. Standing up": ["Preparation", "Breaks"],
+                "B. Bringing a book": ["Preparation", "Breaks"],
+                "C. Doing stretch": ["Preparation", "Breaks"]
+            },
+            answer: {
+                "A. Standing up": "Breaks",
+                "B. Bringing a book": "Preparation",
+                "C. Doing stretch": "Breaks"
+            },
+            explanation: "Gampang ini mah! 'Bringing a book' (B) itu bagian dari 'PREPARE YOUR MATERIALS' (step 1), jadi itu 'Preparation'. 'Standing up' (A) dan 'Doing stretch' (C) ada di step 5 'TAKE SHORT BREAKS', jadi itu bagian dari 'Breaks'. Wkwkwk. 😂"
+        },
+        {
+            passage: passage6to10,
+            question: "How can we decide a certain table is perfect for studying according to the text? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "It has good lighting",
+                "It provides white noise",
+                "It is located near the entrance",
+                "It is far from the toilet",
+                "It provides stationery"
+            ],
+            answer: ["It has good lighting", "It is far from the toilet"],
+            explanation: "Di step 2 'CHOOSE QUIET SPOT', infografisnya nyaranin buat 'Find a table with good light and little noise. Avoid sitting too close to the entrance or the restroom.' Jadi, yang bener itu meja yang 'has good lighting' dan jauh dari toilet/pintu masuk, yang berarti 'is far from the toilet'."
+        },
+        {
+            passage: passage6to10,
+            question: "Who needs to read this infographic?",
+            type: "single",
+            options: [
+                "The students of that school",
+                "People who happen to visit the school",
+                "The librarian of another school",
+                "The headmaster of that school",
+                "Parents who come to pick up their kids"
+            ],
+            answer: "The students of that school",
+            explanation: "Infografis ini judulnya 'HOW TO STUDY IN THE LIBRARY' dan isinya tips buat belajar efektif. Yang paling butuh info ini ya jelas para siswa ('The students') yang sering pakai perpustakaan buat belajar."
+        },
+        {
+            passage: passage6to10,
+            question: "Which actions show disrespect for other students? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "Speaking loudly to friends.",
+                "Keeping the phone silent.",
+                "Eating snacks at the desk.",
+                "Playing music in the corner.",
+                "Moving chairs noisily."
+            ],
+            answer: ["Speaking loudly to friends.", "Eating snacks at the desk.", "Playing music in the corner.", "Moving chairs noisily."],
+            explanation: "Step 4 'FOLLOW LIBRARY RULES' nyebutin 'Speak softly, keep your phone on silent, and do not eat inside. Respect other students.' Dari sini, ngomong kenceng ('Speaking loudly'), makan ('Eating snacks'), dan pastinya muter musik atau geser kursi berisik itu gak menghormati pengunjung lain. 'Keeping the phone silent' justru contoh yang bener."
+        },
+        {
+            passage: passage6to10,
+            question: "You find this infographic in front of your school library. What will you do before your next visit to the library?",
+            type: "single",
+            options: [
+                "Making sure that I bring my water bottle and lunch with me.",
+                "Bringing the books and stationery that I will use.",
+                "Organizing the book that I borrowed from the library.",
+                "Walking for five minutes so I can focus more when studying.",
+                "Making sure you look fresh because you will meet other students."
+            ],
+            answer: "Bringing the books and stationery that I will use.",
+            explanation: "Step 1 'PREPARE YOUR MATERIALS' menyarankan 'Bring your books, notes, stationery, and water.' Jadi, tindakan yang paling pas sebelum ke perpus ya nyiapin buku dan alat tulis yang mau dipake."
+        },
+        {
+            passage: passage11to14,
+            question: "What is the main purpose of visiting these places: to support conservation or to relax? Click Conservation or Relaxation for each place!",
+            type: "matching_table",
+            columns: ["Places", "Conservation", "Relaxation"],
+            items: {
+                "A. Munduk Waterfall": ["Conservation", "Relaxation"],
+                "B. West Bali National Park": ["Conservation", "Relaxation"],
+                "C. Tegalalang Rice Terraces": ["Conservation", "Relaxation"]
+            },
+            answer: {
+                "A. Munduk Waterfall": "Relaxation",
+                "B. West Bali National Park": "Conservation",
+                "C. Tegalalang Rice Terraces": "Relaxation"
+            },
+            explanation: "Munduk Waterfall digambarkan sebagai 'the perfect place to relax'. West Bali National Park adalah 'protected area' dan 'conservation efforts'. Tegalalang Rice Terraces menciptakan 'a peaceful and inspiring scene', yang lebih ke arah relaksasi. Jadi A & C itu 'Relaxation', B itu 'Conservation'."
+        },
+        {
+            passage: passage11to14,
+            question: "The text mainly talks about Bali’s …",
+            type: "single",
+            options: [
+                "wildlife species and nature lovers",
+                "unique cultural treasures and sites.",
+                "stunning nature and remarkable sites.",
+                "generations and cultural conservation.",
+                "scenic beauty and local farming practices."
+            ],
+            answer: "stunning nature and remarkable sites.",
+            explanation: "Teks ini ngebahas berbagai tempat alam di Bali kayak taman nasional, air terjun, dan sawah terasering. Jadi, secara keseluruhan teksnya ngomongin tentang 'stunning nature and remarkable sites' (alam yang menakjubkan dan tempat-tempat luar biasa) di Bali."
+        },
+        {
+            passage: passage11to14,
+            question: "Which parts of the text best support the description of Bali as a 'Bali is full of natural beauty'? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "A peaceful area filled with green forests, calm mangrove swamps, and colorful coral reefs along the sea.",
+                "These terraces are shaped by generations of farmers who work the land by hand.",
+                "Water flows gently over rocky cliffs into a cool, clear pool.",
+                "Mist rises into the air, mixing with the calming sound of falling water.",
+                "In the morning, mist rises above the fields, and sunlight reflects off the water in the paddies."
+            ],
+            answer: ["A peaceful area filled with green forests, calm mangrove swamps, and colorful coral reefs along the sea.", "Water flows gently over rocky cliffs into a cool, clear pool.", "Mist rises into the air, mixing with the calming sound of falling water.", "In the morning, mist rises above the fields, and sunlight reflects off the water in the paddies."],
+            explanation: "Semua opsi yang dipilih itu deskripsi langsung tentang keindahan alam. Kalimat tentang 'generations of farmers' lebih fokus ke aspek budaya/sejarah, bukan deskripsi keindahan alamnya secara langsung. Jadi, yang lain lebih pas buat buktiin Bali itu indah banget. ✨"
+        },
+        {
+            passage: passage15to16,
+            question: "During the internship, what did the writer do every morning?",
+            type: "single",
+            options: [
+                "Made schedules and explained them to the coaches.",
+                "Played football with the team and got the first aid kit.",
+                "Prepared a club gift, guided the coaches, and gave t-shirts.",
+                "Woke up early, arrived on time, and followed the instructions.",
+                "Set up cones, brought water, and checked emergency schedules."
+            ],
+            answer: "Woke up early, arrived on time, and followed the instructions.",
+            explanation: "Jawaban ini salah soal wkwkwk, pertanyaannya buat teks selanjutnya. Tapi kalau kita sambungin ke teks 15-16, jawaban yang bener adalah D. Di teks 15-16, penulis bilang 'Every morning I had to wake up early, arrive on time, and follow instructions carefully.' Oops, salah server! 🤣"
+        },
+        {
+            passage: passage15to16,
+            question: "What are the best words to describe the writer’s personality during the internship? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "Careful and ready to help",
+                "Confident and enjoys working alone",
+                "Responsible and willing to learn",
+                "Friendly and works well with others",
+                "Creative and likes to try new things"
+            ],
+            answer: ["Careful and ready to help", "Responsible and willing to learn", "Friendly and works well with others"],
+            explanation: "'Careful and ready to help' keliatan pas dia sigap ngambil P3K. 'Responsible and willing to learn' ditunjukkan dari kemauannya ngikutin rutinitas pagi dan belajar situasi darurat. 'Friendly and works well with others' disimpulkan dari feedback pelatih yang muji soal 'teamwork' dan 'communication'."
+        },
+        {
+            passage: passage15to16,
+            question: "What will the writer most likely do after finishing the internship?",
+            type: "single",
+            options: [
+                "Considering a career in a sports medicine",
+                "Stop working and focus only on school",
+                "Look for another chance to work in a sports club",
+                "Study medicine to become a doctor",
+                "Train as a professional football player"
+            ],
+            answer: "Look for another chance to work in a sports club",
+            explanation: "Di akhir cerita, penulis bilang 'It was a great experience, and I hope to work in a sports club again in the future.' Ini jelas banget nunjukkin kalo dia bakal nyari kesempatan lain buat kerja di klub olahraga lagi. "
+        },
+        {
+            passage: passage17to20,
+            question: "What will happen if teenagers have poor sleep quality? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "Teenagers' grades could drop.",
+                "Teens struggle to focus in class.",
+                "Teens are likely to feel stressed.",
+                "Teenagers will be more confident",
+                "Teens will become mentally strong."
+            ],
+            answer: ["Teenagers' grades could drop.", "Teens struggle to focus in class.", "Teens are likely to feel stressed."],
+            explanation: "Teksnya bilang, 'Without enough sleep, teens cannot focus well in class, and their grades may suffer. This can increase stress...'. Jadi, kurang tidur bikin susah fokus, nilai turun, dan stres. Opsi lain jelas salah ya."
+        },
+        {
+            passage: passage17to20,
+            question: "Which of the following additional facts would most likely make the text more persuasive? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "Research data showing the number of teenagers experiencing anxiety or depression because of social media.",
+                "Personal stories from teenagers who feel happier after reducing their social media use.",
+                "Statistics about how many teenagers use social media every day.",
+                "A list of the most popular social media platforms among teenagers.",
+                "Expert opinions from doctors or psychologists about the dangers of social media for mental health."
+            ],
+            answer: ["Research data showing the number of teenagers experiencing anxiety or depression because of social media.", "Personal stories from teenagers who feel happier after reducing their social media use.", "Expert opinions from doctors or psychologists about the dangers of social media for mental health."],
+            explanation: "Biar makin meyakinkan, argumen butuh bukti kuat. Data riset, opini ahli (dokter/psikolog), dan cerita personal (studi kasus) itu bukti-bukti yang paling kuat buat mendukung argumen penulis. Statistik jumlah pengguna atau daftar platform populer gak secara langsung mendukung argumen tentang bahaya kesehatan mental."
+        },
+        {
+            passage: passage17to20,
+            question: "Which statements from the text support the author’s argument that social media harms teen mental health? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "'When teens see pictures of people who seem perfect, they feel that they are not good enough.'",
+                "'Many teenagers use their phones late at night, which reduces sleep time and quality.'",
+                "'Schools should teach students how to use social media in healthy ways.'",
+                "'Social media helps teens stay connected with friends and learn about interesting topics.'",
+                "'Victims of cyberbullying often feel alone, scared, and helpless.'"
+            ],
+            answer: ["'When teens see pictures of people who seem perfect, they feel that they are not good enough.'", "'Many teenagers use their phones late at night, which reduces sleep time and quality.'", "'Victims of cyberbullying often feel alone, scared, and helpless.'"],
+            explanation: "Tiga pernyataan yang bener itu adalah argumen utama penulis tentang dampak negatif medsos: perbandingan sosial, gangguan tidur, dan cyberbullying. Pernyataan tentang 'stay connected with friends' itu sisi positifnya, dan yang tentang 'Schools should teach...' itu solusinya, bukan argumen utamanya."
+        },
+        {
+            passage: passage17to20,
+            question: "What is the most prominent impression you gain from the text? (Multiple Answers)",
+            type: "multiple",
+            options: [
+                "Social media makes teenagers unhappy because they compare their lives to unrealistic images online.",
+                "Teenagers should completely stop using social media to protect their mental health.",
+                "Using social media too much can disturb teenagers' sleep and make it harder for them to focus at school.",
+                "Cyberbullying is a serious problem on social media and can make teenagers feel lonely and scared.",
+                "The text explains that social media has only negative effects without any positive sides."
+            ],
+            answer: ["Social media makes teenagers unhappy because they compare their lives to unrealistic images online.", "Using social media too much can disturb teenagers' sleep and make it harder for them to focus at school.", "Cyberbullying is a serious problem on social media and can make teenagers feel lonely and scared."],
+            explanation: "Kesan utama yang didapet ya tiga masalah besar itu: perbandingan sosial, gangguan tidur/fokus, dan cyberbullying. Teksnya gak nyuruh berhenti total, tapi 'use it wisely'. Teksnya juga ngakuin ada sisi positifnya, jadi opsi terakhir salah."
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let currentReviewIndex = 0;
+    let userAnswers = new Array(questions.length).fill(null);
+    let timerInterval = null;
+    const totalTime = 40 * 60; // 40 minutes in seconds
+
+    // Screen elements
+    const startScreen = document.getElementById('start-screen');
+    const quizArea = document.getElementById('quiz-area');
+    const resultsScreen = document.getElementById('results-screen');
+    const reviewArea = document.getElementById('review-area');
+
+    // Quiz elements
+    const startBtn = document.getElementById('start-btn');
+    const questionNumberEl = document.getElementById('question-number');
+    const passageContainer = document.getElementById('passage-container');
+    const questionTextEl = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const timerEl = document.getElementById('timer');
+    const progressBar = document.getElementById('progress-bar');
+    
+    // Results elements
+    const scoreEl = document.getElementById('score');
+    const scoreTextEl = document.getElementById('score-text');
+    const reviewQuizBtn = document.getElementById('review-quiz-btn');
+
+    // Review elements
+    const reviewNumberEl = document.getElementById('review-number');
+    const reviewPassageContainer = document.getElementById('review-passage-container');
+    const reviewDetailsContainer = document.getElementById('review-details-container');
+    const reviewPrevBtn = document.getElementById('review-prev-btn');
+    const reviewNextBtn = document.getElementById('review-next-btn');
+    const backToScoreBtn = document.getElementById('back-to-score-btn');
+
+
+    // --- Event Listeners ---
+    startBtn.addEventListener('click', startQuiz);
+    prevBtn.addEventListener('click', prevQuestion);
+    nextBtn.addEventListener('click', handleNextClick);
+    reviewQuizBtn.addEventListener('click', showReview);
+    reviewPrevBtn.addEventListener('click', prevReview);
+    reviewNextBtn.addEventListener('click', nextReview);
+    backToScoreBtn.addEventListener('click', () => {
+        reviewArea.classList.add('hidden');
+        resultsScreen.classList.remove('hidden');
+    });
+
+    function startQuiz() {
+        startScreen.classList.add('hidden');
+        quizArea.classList.remove('hidden');
+        loadQuestion(currentQuestionIndex);
+        startTimer();
+    }
+    
+    function startTimer() {
+        let timeLeft = totalTime;
+        updateProgressBar(timeLeft);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateProgressBar(timeLeft);
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitQuiz();
+            }
+        }, 1000);
+    }
+
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    function updateProgressBar(timeLeft) {
+        const percentage = (timeLeft / totalTime) * 100;
+        progressBar.style.width = `${percentage}%`;
+        timerEl.textContent = formatTime(timeLeft);
+        if (percentage < 25) {
+            progressBar.style.backgroundColor = 'var(--highlight-red)';
+        } else if (percentage < 50) {
+            progressBar.style.backgroundColor = 'var(--highlight-yellow)';
+        } else {
+            progressBar.style.backgroundColor = 'var(--highlight-green)';
+        }
+    }
+
+
+    function loadQuestion(index) {
+        const question = questions[index];
+        questionNumberEl.textContent = `${index + 1}/${questions.length}`;
+        passageContainer.innerHTML = question.passage;
+        questionTextEl.innerHTML = question.question;
+        optionsContainer.innerHTML = '';
+
+        if (question.type === 'single' || question.type === 'multiple') {
+            const inputType = question.type === 'single' ? 'radio' : 'checkbox';
+            question.options.forEach(optionText => {
+                const label = document.createElement('label');
+                label.className = 'option';
+                const input = document.createElement('input');
+                input.type = inputType;
+                input.name = "option";
+                input.value = optionText;
+                const text = document.createTextNode(` ${optionText}`);
+                label.appendChild(input);
+                label.appendChild(text);
+                optionsContainer.appendChild(label);
+            });
+        } else if (question.type === 'matching_table') {
+            const container = document.createElement('div');
+            container.className = 'matching-table-container';
+            const table = document.createElement('table');
+            table.className = 'matching-table';
+            const thead = table.createTHead();
+            const headerRow = thead.insertRow();
+            question.columns.forEach(colText => {
+                const th = document.createElement('th');
+                th.textContent = colText;
+                headerRow.appendChild(th);
+            });
+            const tbody = table.createTBody();
+            Object.keys(question.items).forEach((itemText, rowIndex) => {
+                const row = tbody.insertRow();
+                const itemCell = row.insertCell();
+                itemCell.textContent = itemText;
+                question.items[itemText].forEach(optionValue => {
+                    const cell = row.insertCell();
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `q${index}_row${rowIndex}`;
+                    radio.value = optionValue;
+                    radio.dataset.item = itemText;
+                    cell.appendChild(radio);
+                });
+            });
+            container.appendChild(table);
+            optionsContainer.appendChild(container);
+        }
+        
+        restoreAnswer(index);
+        addOptionListeners();
+        updateNavButtons();
+    }
+    
+    function addOptionListeners() {
+        const inputs = optionsContainer.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('change', saveAnswer);
+        });
+    }
+
+    function saveAnswer() {
+        const question = questions[currentQuestionIndex];
+        if (question.type === 'single') {
+            const selected = optionsContainer.querySelector('input[name="option"]:checked');
+            userAnswers[currentQuestionIndex] = selected ? selected.value : null;
+        } else if (question.type === 'multiple') {
+            const selected = Array.from(optionsContainer.querySelectorAll('input:checked')).map(cb => cb.value);
+            userAnswers[currentQuestionIndex] = selected.length > 0 ? selected : null;
+        } else if (question.type === 'matching_table') {
+            const answers = {};
+            const checkedRadios = optionsContainer.querySelectorAll('input[type="radio"]:checked');
+            checkedRadios.forEach(radio => {
+                answers[radio.dataset.item] = radio.value;
+            });
+            userAnswers[currentQuestionIndex] = Object.keys(answers).length === Object.keys(question.items).length ? answers : null;
+        }
+    }
+    
+    function restoreAnswer(index) {
+        const answer = userAnswers[index];
+        if (answer === null) return;
+        const question = questions[index];
+        if (question.type === 'single') {
+            const input = optionsContainer.querySelector(`input[value="${CSS.escape(answer)}"]`);
+            if (input) input.checked = true;
+        } else if (question.type === 'multiple') {
+            answer.forEach(val => {
+                const input = optionsContainer.querySelector(`input[value="${CSS.escape(val)}"]`);
+                if (input) input.checked = true;
+            });
+        } else if (question.type === 'matching_table') {
+            Object.keys(answer).forEach(itemText => {
+                const value = answer[itemText];
+                const radio = optionsContainer.querySelector(`input[data-item="${CSS.escape(itemText)}"][value="${CSS.escape(value)}"]`);
+                if (radio) radio.checked = true;
+            });
+        }
+    }
+
+    function updateNavButtons() {
+        prevBtn.disabled = currentQuestionIndex === 0;
+        nextBtn.innerHTML = (currentQuestionIndex === questions.length - 1) 
+            ? `Submit <i class="fa-solid fa-paper-plane"></i>` 
+            : `Next <i class="fa-solid fa-chevron-right"></i>`;
+    }
+
+    function handleNextClick() {
+        if (currentQuestionIndex < questions.length - 1) {
+            nextQuestion();
+        } else {
+            submitQuiz();
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion(currentQuestionIndex);
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion(currentQuestionIndex);
+        }
+    }
+
+    function submitQuiz() {
+        clearInterval(timerInterval);
+        quizArea.classList.add('hidden');
+        resultsScreen.classList.remove('hidden');
+        calculateAndShowScore();
+    }
+    
+    function calculateAndShowScore() {
+        let score = 0;
+        questions.forEach((q, index) => {
+            if (isAnswerCorrect(q, userAnswers[index])) {
+                score++;
+            }
+        });
+
+        scoreEl.textContent = `${score} / ${questions.length}`;
+        let scoreMessage = "";
+        if (score > 15) {
+            scoreMessage = "Awesome! High score obtained! 🏆";
+        } else if (score > 10) {
+            scoreMessage = "Not bad! Better than average! 👍";
+        } else {
+            scoreMessage = "Keep trying! You're almost there! 💪";
+        }
+        scoreTextEl.textContent = scoreMessage;
+    }
+
+    function isAnswerCorrect(question, userAnswer) {
+        if (!userAnswer) return false;
+        if (question.type === 'single') {
+            return userAnswer === question.answer;
+        } else if (question.type === 'multiple') {
+            return question.answer.length === userAnswer.length && question.answer.every(val => userAnswer.includes(val));
+        } else if (question.type === 'matching_table') {
+            return Object.keys(question.answer).length === Object.keys(userAnswer).length && Object.keys(question.answer).every(key => question.answer[key] === userAnswer[key]);
+        }
+        return false;
+    }
+    
+    // --- Review Logic ---
+    function showReview() {
+        resultsScreen.classList.add('hidden');
+        reviewArea.classList.remove('hidden');
+        currentReviewIndex = 0;
+        loadReview(currentReviewIndex);
+    }
+
+    function loadReview(index) {
+        const question = questions[index];
+        const userAnswer = userAnswers[index];
+        const isCorrect = isAnswerCorrect(question, userAnswer);
+
+        reviewNumberEl.textContent = `Pembahasan ${index + 1}/${questions.length}`;
+        reviewPassageContainer.innerHTML = question.passage;
+        
+        const formattedUserAnswer = formatAnswerForReview(userAnswer, question.type);
+        const formattedCorrectAnswer = formatAnswerForReview(question.answer, question.type);
+
+        reviewDetailsContainer.innerHTML = `
+            <div class="review-item ${isCorrect ? 'correct' : 'incorrect'}">
+                <h4>${question.question}</h4>
+                <div class="review-answer">Your Answer: <span>${formattedUserAnswer}</span></div>
+                <div class="review-answer">Answer Key: <span>${formattedCorrectAnswer}</span></div>
+                <div class="review-explanation"><b>Explanation:</b> ${question.explanation}</div>
+            </div>
+        `;
+        updateReviewNavButtons();
+    }
+
+    function updateReviewNavButtons() {
+        reviewPrevBtn.disabled = currentReviewIndex === 0;
+        reviewNextBtn.disabled = currentReviewIndex === questions.length - 1;
+    }
+    
+    function nextReview() {
+        if (currentReviewIndex < questions.length - 1) {
+            currentReviewIndex++;
+            loadReview(currentReviewIndex);
+        }
+    }
+
+    function prevReview() {
+        if (currentReviewIndex > 0) {
+            currentReviewIndex--;
+            loadReview(currentReviewIndex);
+        }
+    }
+    
+    function formatAnswerForReview(answer, type) {
+        if (answer === null || answer === "" || (Array.isArray(answer) && answer.length === 0)) return "<i>(Tidak dijawab)</i>";
+        
+        if (type === 'multiple') {
+            return `<ul>${answer.map(a => `<li>${a}</li>`).join('')}</ul>`;
+        } else if (type === 'matching_table') {
+            return `<ul style="list-style-type: none; padding-left: 0;">${Object.keys(answer).map(key => `<li><b>${key.replace(/A\.|B\.|C\./g, '').trim()}</b> &rarr; ${answer[key]}</li>`).join('')}</ul>`;
+        }
+        return answer;
+    }
+
+});
+</script>
+
+</body>
+</html>
